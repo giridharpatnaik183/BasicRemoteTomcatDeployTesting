@@ -3,9 +3,8 @@ pipeline {
 
     environment {
         TOMCAT_WEBAPPS = '/var/lib/tomcat9/webapps' // Set this to the actual path of the Tomcat webapps directory
-        REMOTE_SERVER = 'ubuntu@172.31.32.41' // Remote server SSH address
+        REMOTE_SERVER = 'ubuntu@172.31.32.41' // Remote server SSH address and Tomcat remote IP
         TOMCAT_USER = 'tomcat' // Tomcat user on the remote server
-        TOMCAT_REMOTE_IP = '18.234.157.123' // Tomcat remote server IP
     }
 
     stages {
@@ -29,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Restart Tomcat on the remote server
-                    sh "ssh ${env.TOMCAT_USER}@${env.TOMCAT_REMOTE_IP} 'sudo service tomcat restart'"
+                    sh "ssh ${env.REMOTE_SERVER} 'sudo service tomcat restart'"
                 }
             }
         }
