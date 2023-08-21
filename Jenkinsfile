@@ -1,21 +1,33 @@
 pipeline {
     agent any
 
+    environment {
+        TOMCAT_WEBAPPS = '/path/to/tomcat/webapps' // Set this to the actual path of the Tomcat webapps directory
+    }
+
     stages {
         stage('Checkout') {
             steps {
-                echo "Checking out code from GitHub repository"
-                git branch: 'main', url: 'https://github.com/giridharpatnaik183/BasicRemoteTomcatDeployTesting.git'
+                // Checkout the code from the Git repository
+                checkout scm
             }
         }
 
-        stage('Deploy to Tomcat') {
+        stage('Copy HTML to Tomcat') {
             steps {
-                echo "Copying index.html to remote Tomcat server"
-                sh 'scp index.html tomcat@18.234.157.123:/path/to/tomcat/webapps/ROOT/'
+                script {
+                    def tomcatWebappsDir = "${TOMCAT_WEBAPPS}/ROOT/"
+                    sh "cp index.html ${tomcatWebappsDir}"
+                }
+            }
+        }
 
-                echo "Restarting Tomcat on the remote server"
-                sh 'ssh tomcat@18.234.157.123 "sudo service tomcat restart"'
+        stage('Restart Tomcat') {
+            steps {
+                script {
+                    // Restart Tomcat on the remote server (adjust the command as needed)
+                    sh 'ssh tomcat@18.234.157.123 "sudo service tomcat restart"'
+                }
             }
         }
     }
